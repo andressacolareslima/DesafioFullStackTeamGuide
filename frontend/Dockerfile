@@ -5,6 +5,10 @@ COPY package*.json ./
 # Instala as dependências da interface mantendo a lógica de pacotes legados
 RUN npm install --legacy-peer-deps
 COPY . .
+# Passa a variável da Render para dentro do container na hora de compilar o Vite
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Cria a pasta /dist para produção (Vite)
 RUN npm run build
 
