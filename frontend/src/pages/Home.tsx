@@ -98,7 +98,7 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
     }, 300);
   };
 
-  const { data: vagas = [], isLoading } = useQuery<Vaga[]>(
+  const { data: vagas = [], isLoading, isError } = useQuery<Vaga[]>(
     "vagasHome",
     async () => {
       const res = await api.get("/vagas?size=100");
@@ -107,6 +107,7 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
     },
     {
       staleTime: 1000 * 60 * 5,
+      retry: 1
     },
   );
 
@@ -254,43 +255,50 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
 
         <Fade in={!isPaginating} timeout={300}>
           <Box minHeight={400}>
+            {isError ? (
+              <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#fff", borderRadius: 35, border: "1px dashed #cfd8dc" }}>
+                <Box fontSize={50} mb={2}>⚠️</Box>
+                <Typography variant="h5" style={{ fontWeight: 800, color: "#d32f2f" }}>
+                  Falha ao carregar oportunidades
+                </Typography>
+                <Typography variant="body1" color="textSecondary" style={{ marginTop: 10 }}>
+                  Verifique sua conexão ou tente novamente mais tarde.
+                </Typography>
+              </Box>
+            ) : vagasFiltradas.length === 0 ? (
+              <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#F9FBFB", borderRadius: 35, border: "2px dashed #B2EBF2" }}>
+                <Box fontSize={60} mb={2}>🔍</Box>
+                <Typography variant="h5" style={{ fontWeight: 800, color: "#00838F" }}>
+                  Nenhuma vaga encontrada
+                </Typography>
+                <Typography variant="body1" color="textSecondary" style={{ marginTop: 10, maxWidth: 400, margin: "0 auto" }}>
+                  Tente ajustar seus filtros de pesquisa ou retorne mais tarde para visualizar novas oportunidades.
+                </Typography>
+              </Box>
+            ) : (
             <Grid container spacing={3}>
               {vagasExibidas.map((v) => (
                 <Grid item xs={12} key={v.id} className={classes.cardAnimado}>
                   <VagaCard vaga={v} setAlerta={setAlerta} />
                 </Grid>
               ))}
-
-              {vagasFiltradas.length === 0 && (
-                <Box width="100%" textAlign="center" py={10}>
-                  <Box fontSize={50} mb={2}>
-                    🔍
-                  </Box>
-                  <Typography
-                    variant="h5"
-                    style={{ fontWeight: 800, color: "#004D40" }}
-                  >
-                    Nenhuma vaga encontrada
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary">
-                    Tente ajustar seus filtros ou termos de pesquisa.
-                  </Typography>
-                </Box>
-              )}
             </Grid>
+            )}
           </Box>
         </Fade>
 
-        <Box mt={10} display="flex" justifyContent="center">
-          <Pagination
-            className={classes.pagination}
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-            variant="outlined"
-            shape="rounded"
-          />
-        </Box>
+        {vagasFiltradas.length > 0 && !isError && (
+          <Box mt={10} display="flex" justifyContent="center">
+            <Pagination
+              className={classes.pagination}
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              variant="outlined"
+              shape="rounded"
+            />
+          </Box>
+        )}
       </Container>
     </Fade>
   );

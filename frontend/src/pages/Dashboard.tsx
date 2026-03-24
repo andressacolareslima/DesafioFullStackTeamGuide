@@ -48,15 +48,16 @@ const COLORS = [
 const Dashboard: React.FC = () => {
   const classes = useStyles();
 
-  const { data: vagasData = [], isLoading: loadVagas } = useQuery(
+  const { data: vagasData = [], isLoading: loadVagas, isError: errorVagas } = useQuery(
     "estatisticasVagas",
     async () => {
       const res = await api.get("/estatisticas/vagas");
       return res.data;
     },
+    { retry: 1 }
   );
 
-  const { data: statusData = [], isLoading: loadStatus } = useQuery(
+  const { data: statusData = [], isLoading: loadStatus, isError: errorStatus } = useQuery(
     "estatisticasStatus",
     async () => {
       const res = await api.get("/estatisticas/status");
@@ -73,11 +74,13 @@ const Dashboard: React.FC = () => {
                 : d.rotulo,
       }));
     },
+    { retry: 1 }
   );
 
   if (loadVagas || loadStatus) return <Loading />;
 
   const hasVagas = vagasData.length > 0;
+  const isError = errorVagas || errorStatus;
 
   return (
     <Fade in={true}>
@@ -89,8 +92,18 @@ const Dashboard: React.FC = () => {
           Dashboard
         </Typography>
 
-        {!hasVagas ? (
-          <Box textAlign="center" py={10}>
+        {isError ? (
+          <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#fff", borderRadius: 35, border: "1px dashed #cfd8dc" }}>
+            <Box fontSize={50} mb={2}>⚠️</Box>
+            <Typography variant="h5" style={{ fontWeight: 800, color: "#d32f2f" }}>
+              Falha ao carregar dados
+            </Typography>
+            <Typography variant="body1" color="textSecondary" style={{ marginTop: 10 }}>
+              Verifique sua conexão ou a disponibilidade do servidor.
+            </Typography>
+          </Box>
+        ) : !hasVagas ? (
+          <Box textAlign="center" py={10} style={{ backgroundColor: "#F9FBFB", borderRadius: 35, border: "2px dashed #B2EBF2" }}>
             <Box fontSize={50} mb={2}>
               📊
             </Box>
@@ -101,8 +114,7 @@ const Dashboard: React.FC = () => {
               Ainda não há dados suficientes
             </Typography>
             <Typography variant="body1" color="textSecondary">
-              Crie vagas e adicione currículos para popular o Dashboard
-              Analítico.
+              Crie vagas e adicione currículos para popular o Dashboard Analítico.
             </Typography>
           </Box>
         ) : (

@@ -133,12 +133,13 @@ const Inscricoes: React.FC<InscricoesProps> = ({ setAlerta }) => {
     null,
   );
 
-  const { data: inscricoes = [], isLoading } = useQuery<Candidatura[]>(
+  const { data: inscricoes = [], isLoading, isError } = useQuery<Candidatura[]>(
     "candidaturas",
     async () => {
       const res = await api.get("/candidaturas");
       return res.data || [];
     },
+    { retry: 1 }
   );
 
   const updateMutation = useMutation(
@@ -194,6 +195,28 @@ const Inscricoes: React.FC<InscricoesProps> = ({ setAlerta }) => {
         >
           Inscrições
         </Typography>
+
+        {isError ? (
+          <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#fff", borderRadius: 35, border: "1px dashed #cfd8dc" }}>
+            <Box fontSize={50} mb={2}>⚠️</Box>
+            <Typography variant="h5" style={{ fontWeight: 800, color: "#d32f2f" }}>
+              Falha ao carregar dados
+            </Typography>
+            <Typography variant="body1" color="textSecondary" style={{ marginTop: 10 }}>
+              Verifique sua conexão ou a disponibilidade do servidor.
+            </Typography>
+          </Box>
+        ) : inscricoes.length === 0 ? (
+          <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#F9FBFB", borderRadius: 35, border: "2px dashed #B2EBF2" }}>
+            <Box fontSize={60} mb={2}>📋</Box>
+            <Typography variant="h5" style={{ fontWeight: 800, color: "#00838F" }}>
+              Nenhuma inscrição recebida
+            </Typography>
+            <Typography variant="body1" color="textSecondary" style={{ marginTop: 10, maxWidth: 400, margin: "10px auto" }}>
+              Assim que os candidatos começarem a se inscrever em suas vagas ativas, os currículos e status de aprovação aparecerão aqui.
+            </Typography>
+          </Box>
+        ) : (
         <Fade in={!isPaginating} timeout={300}>
           <Box minHeight={450}>
             <TableContainer
@@ -269,6 +292,7 @@ const Inscricoes: React.FC<InscricoesProps> = ({ setAlerta }) => {
             </TableContainer>
           </Box>
         </Fade>
+        )}
         <Dialog
           open={Boolean(deleteId)}
           TransitionComponent={Transition}
@@ -322,16 +346,18 @@ const Inscricoes: React.FC<InscricoesProps> = ({ setAlerta }) => {
             </DialogActions>
           </Box>
         </Dialog>
-        <Box mt={6} display="flex" justifyContent="center">
-          <Pagination
-            count={Math.ceil(inscricoes.length / 7)}
-            page={page}
-            onChange={handlePageChange}
-            variant="outlined"
-            shape="rounded"
-            className={classes.pagination}
-          />
-        </Box>
+        {inscricoes.length > 0 && !isError && (
+          <Box mt={6} display="flex" justifyContent="center">
+            <Pagination
+              count={Math.ceil(inscricoes.length / 7) || 1}
+              page={page}
+              onChange={handlePageChange}
+              variant="outlined"
+              shape="rounded"
+              className={classes.pagination}
+            />
+          </Box>
+        )}
       </Container>
     </Fade>
   );
