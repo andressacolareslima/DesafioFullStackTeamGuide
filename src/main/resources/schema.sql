@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS vagas (
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    area VARCHAR(255) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    status VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS candidaturas (
+    id SERIAL PRIMARY KEY,
+    vaga_id BIGINT NOT NULL,
+    nome_candidato VARCHAR(255) NOT NULL,
+    email_candidato VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    FOREIGN KEY (vaga_id) REFERENCES vagas(id) ON DELETE CASCADE
+);
