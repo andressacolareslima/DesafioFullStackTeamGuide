@@ -130,13 +130,13 @@ const GerenciarVagas: React.FC<GerenciarProps> = ({ setAlerta }) => {
     status: "Aberta",
   });
 
-  const { data, isLoading } = useQuery(
+  const { data, isLoading, isError } = useQuery(
     ["vagasAdmin", page],
     async () => {
       const res = await api.get(`/vagas?page=${page - 1}&size=5&sort=id,desc`);
       return res.data;
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true, retry: 1 },
   );
 
   const saveMutation = useMutation(
@@ -206,10 +206,8 @@ const GerenciarVagas: React.FC<GerenciarProps> = ({ setAlerta }) => {
     }, 300);
   };
 
-  if (isLoading) return <Loading />;
-
   return (
-    <Fade in={!isLoading} timeout={1000}>
+    <Fade in={true} timeout={1000}>
       <Container maxWidth="md" style={{ marginTop: 50, marginBottom: 80 }}>
         <Box className={classes.headerBox}>
           <Typography
@@ -237,16 +235,39 @@ const GerenciarVagas: React.FC<GerenciarProps> = ({ setAlerta }) => {
           </Button>
         </Box>
 
+        {isLoading ? (
+          <Loading />
+        ) : isError ? (
+          <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#fff", borderRadius: 35, border: "1px dashed #cfd8dc" }}>
+            <Box fontSize={50} mb={2}>⚠️</Box>
+            <Typography variant="h5" style={{ fontWeight: 800, color: "#d32f2f" }}>
+              Falha ao carregar dados
+            </Typography>
+            <Typography variant="body1" color="textSecondary" style={{ marginTop: 10 }}>
+              Verifique se a variável VITE_API_URL está correta ou se o backend está online.
+            </Typography>
+          </Box>
+        ) : data?.content?.length === 0 ? (
+          <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#F9FBFB", borderRadius: 35, border: "2px dashed #B2EBF2" }}>
+            <Box fontSize={60} mb={2}>✨</Box>
+            <Typography variant="h5" style={{ fontWeight: 800, color: "#00838F" }}>
+              Seu portal está novinho em folha!
+            </Typography>
+            <Typography variant="body1" color="textSecondary" style={{ marginTop: 10, maxWidth: 400, margin: "10px auto" }}>
+              Ainda não existem vagas cadastradas no banco de dados. Clique no botão "ANUNCIAR VAGA" acima para publicar a sua primeira oportunidade.
+            </Typography>
+          </Box>
+        ) : (
         <Fade in={!isPaginating} timeout={300}>
-          <Box minHeight={500}>
-            {data?.content?.map((v: Vaga) => (
-              <Card key={v.id} className={classes.cardAdmin} elevation={0}>
-                <Box>
-                  <Typography
-                    variant="h5"
-                    style={{ fontWeight: 900, color: "#004D40" }}
-                  >
-                    {v.titulo}
+           <Box minHeight={500}>
+             {data?.content?.map((v: Vaga) => (
+                <Card key={v.id} className={classes.cardAdmin} elevation={0}>
+                  <Box>
+                    <Typography
+                      variant="h5"
+                      style={{ fontWeight: 900, color: "#004D40" }}
+                    >
+                      {v.titulo}
                   </Typography>
                   <Typography
                     variant="body1"
@@ -295,6 +316,7 @@ const GerenciarVagas: React.FC<GerenciarProps> = ({ setAlerta }) => {
             ))}
           </Box>
         </Fade>
+        )}
 
         <Box mt={8} display="flex" justifyContent="center">
           <Pagination
