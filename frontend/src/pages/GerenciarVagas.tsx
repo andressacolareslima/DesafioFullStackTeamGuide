@@ -372,7 +372,7 @@ const GerenciarVagas: React.FC<GerenciarProps> = ({ setAlerta }) => {
                       setForm({ ...form, tipo: e.target.value })
                     }
                   >
-                    {["Estágio", "Júnior", "Pleno"].map((opt) => (
+                    {["Estágio", "Júnior", "Pleno", "Sênior"].map((opt) => (
                       <MenuItem key={opt} value={opt}>
                         {opt}
                       </MenuItem>
