@@ -22,12 +22,12 @@ public class VagasController {
     }
     @GetMapping 
     public Page<VagasModel> ListarVagasPaginado(
-        @RequestParam(defaultValue = "0") int page, 
-        @RequestParam(defaultValue = "10") int size) {
+        @RequestParam(name = "page", defaultValue = "0") int page, 
+        @RequestParam(name = "size", defaultValue = "10") int size) {
         return vagasRepository.findAll(PageRequest.of(page, size));
     }
     @GetMapping("/{id}")
-    public ResponseEntity<VagasModel> BuscarVagaPorId(@PathVariable Long id) {
+    public ResponseEntity<VagasModel> BuscarVagaPorId(@PathVariable("id") Long id) {
         return vagasRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -40,7 +40,7 @@ public class VagasController {
         return vagasRepository.save(vaga);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<VagasModel> AtualizarVaga(@PathVariable Long id, @RequestBody VagasModel vagaAtualizada) {
+    public ResponseEntity<VagasModel> AtualizarVaga(@PathVariable("id") Long id, @RequestBody VagasModel vagaAtualizada) {
         return vagasRepository.findById(id)
                 .map(vaga -> {
                     vaga.setTitulo(vagaAtualizada.getTitulo());
@@ -53,7 +53,7 @@ public class VagasController {
                 .orElse(ResponseEntity.notFound().build());
     }
     @PatchMapping("/{id}/fechar")
-    public ResponseEntity<Void> FecharVaga(@PathVariable Long id) {
+    public ResponseEntity<Void> FecharVaga(@PathVariable("id") Long id) {
     if (vagasRepository.existsById(id)) {
         vagasRepository.fecharVagaPorId(id); 
         return ResponseEntity.ok().build();
@@ -61,7 +61,7 @@ public class VagasController {
     return ResponseEntity.notFound().build();
 }
    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> DeletarVaga(@PathVariable Long id) {
+    public ResponseEntity<Void> DeletarVaga(@PathVariable("id") Long id) {
         if (vagasRepository.existsById(id)) {
             vagasRepository.deleteById(id);
             return ResponseEntity.noContent().build();
@@ -70,7 +70,7 @@ public class VagasController {
         } 
     } 
     @GetMapping("/filtros/status")
-    public List<VagasModel> FiltrarVagasPorStatus(@RequestParam String status) {
+    public List<VagasModel> FiltrarVagasPorStatus(@RequestParam("status") String status) {
         return vagasRepository.findByStatus(status);
 }
 }

@@ -10,6 +10,11 @@ export interface Candidatura {
   id: number;
   nomeCandidato: string;
   emailCandidato: string;
-  vaga?: Vaga;
+  vagaId: number;
+  status: string;
+  vaga_titulo?: string;
   tituloVaga?: string;
+  vaga?: {
+    titulo: string;
+  };
 }
