@@ -1,8 +1,8 @@
 import React from 'react';
-import { Box, Container, Typography, Grid, Link, makeStyles, Divider } from '@material-ui/core';
+import { Box, Container, Typography, Grid, Link, makeStyles, Divider, Theme } from '@material-ui/core';
 import { Instagram, LinkedIn, GitHub, TrendingUp as FlowIcon } from '@material-ui/icons';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   footer: {
     backgroundColor: '#E0F7FA', 
     color: '#004D40', 
@@ -10,6 +10,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 'auto',
     borderRadius: '60px 60px 0 0', 
     boxShadow: '0px -10px 30px rgba(0, 172, 193, 0.05)',
+    position: 'relative',
+    zIndex: 2, // Garante que fique acima dos shapes decorativos
   },
   logoSection: {
     display: 'flex',
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Footer = () => {
+const Footer: React.FC = () => {
   const classes = useStyles();
 
   return (
@@ -54,6 +56,7 @@ const Footer = () => {
       <Container maxWidth="md">
         <Grid container spacing={4} justifyContent="space-between">
           
+          {/* SOBRE O TALENTFLOW */}
           <Grid item xs={12} md={5}>
             <Box className={classes.logoSection}>
               <FlowIcon style={{ fontSize: 30, color: '#00ACC1' }} />
@@ -67,6 +70,7 @@ const Footer = () => {
             </Typography>
           </Grid>
 
+          {/* LINKS RÁPIDOS */}
           <Grid item xs={6} md={2}>
             <Typography variant="subtitle1" style={{ fontWeight: 800, color: '#004D40', marginBottom: 15 }}>
               Plataforma
@@ -76,14 +80,15 @@ const Footer = () => {
             <Link href="#" className={classes.footerLink}>Privacidade</Link>
           </Grid>
 
+          {/* SOCIAL */}
           <Grid item xs={6} md={3}>
             <Typography variant="subtitle1" style={{ fontWeight: 800, color: '#004D40', marginBottom: 15 }}>
               Conecte-se
             </Typography>
             <Box display="flex">
-              <Link href="#" className={classes.socialIcon}><Instagram /></Link>
-              <Link href="#" className={classes.socialIcon}><LinkedIn /></Link>
-              <Link href="#" className={classes.socialIcon}><GitHub /></Link>
+              <Link href="#" className={classes.socialIcon} aria-label="Instagram"><Instagram /></Link>
+              <Link href="#" className={classes.socialIcon} aria-label="LinkedIn"><LinkedIn /></Link>
+              <Link href="#" className={classes.socialIcon} aria-label="GitHub"><GitHub /></Link>
             </Box>
           </Grid>
         </Grid>
@@ -93,7 +98,7 @@ const Footer = () => {
         <Box textAlign="center">
           <Typography variant="caption" style={{ color: '#888', fontWeight: 600 }}>
             © {new Date().getFullYear()} <strong>TalentFlow</strong>. Todos os direitos reservados. <br/>
-            Construído por por Andressa Colares
+            Construído por <strong>Andressa Colares</strong>
           </Typography>
         </Box>
       </Container>

@@ -7,12 +7,18 @@ import {
   PeopleOutline as PeopleIcon 
 } from '@material-ui/icons';
 
+// DEFININDO OS TIPOS DAS PROPS (Exigência do TypeScript)
+interface NavbarProps {
+  view: string;
+  setView: (view: string) => void;
+}
+
 const useStyles = makeStyles(() => ({
   navbar: {
-    backgroundColor: '#B2EBF2', // A COR VOLTOU! Azul ciano da marca
+    backgroundColor: '#B2EBF2',
     color: '#006064',
     padding: '10px 0',
-    borderRadius: '0 0 50px 50px', // Bordas arredondadas imponentes
+    borderRadius: '0 0 50px 50px',
     boxShadow: '0px 4px 20px rgba(0, 172, 193, 0.1)',
     borderBottom: '1px solid rgba(255,255,255,0.3)',
   },
@@ -31,18 +37,18 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.95rem',
     marginLeft: '12px',
     padding: '10px 22px',
-    color: '#004D40', // Verde escuro para contraste no azul claro
+    color: '#004D40',
     transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)',
     '& .MuiButton-startIcon': {
       transition: '0.3s transform ease',
       color: '#00ACC1'
     },
     '&:hover': {
-      backgroundColor: '#FFFFFF', // Fica branco no hover para destacar
+      backgroundColor: '#FFFFFF',
       boxShadow: '0 6px 15px rgba(0, 0, 0, 0.05)',
       transform: 'translateY(-3px)',
       '& .MuiButton-startIcon': {
-        transform: 'scale(1.2) rotate(-8deg)', // Ícone cresce e inclina
+        transform: 'scale(1.2) rotate(-8deg)',
       }
     }
   },
@@ -59,7 +65,8 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const Navbar = ({ view, setView }) => {
+// APLICANDO O TIPO React.FC (Function Component)
+const Navbar: React.FC<NavbarProps> = ({ view, setView }) => {
   const classes = useStyles();
 
   return (
