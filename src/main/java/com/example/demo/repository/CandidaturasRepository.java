@@ -26,6 +26,11 @@ public interface CandidaturasRepository extends CrudRepository<CandidaturasModel
 
     @Modifying
     @Transactional
+    @Query("UPDATE candidaturas SET nome_candidato = :nomeCandidato WHERE id = :id")
+    void atualizarNomeManual(@Param("id") Long id, @Param("nomeCandidato") String nomeCandidato);
+
+    @Modifying
+    @Transactional
     @Query("DELETE FROM candidaturas WHERE id = :id")
     void deletarManual(@Param("id") Long id);
 

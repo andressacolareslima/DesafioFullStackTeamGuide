@@ -56,6 +56,12 @@ public class CandidaturasController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/user/{id}")
+    public ResponseEntity<?> atualizarCandidaturaUser(@PathVariable("id") Long id, @RequestBody CandidaturaDTO dto) {
+        candidaturasRepository.atualizarNomeManual(id, dto.getNomeCandidato());
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
         candidaturasRepository.deletarManual(id);
