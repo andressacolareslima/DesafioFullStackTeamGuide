@@ -16,7 +16,10 @@ import {
   SettingsOutlined as GearIcon,
   PeopleOutline as PeopleIcon,
   DashboardOutlined as DashboardIcon,
+  ExitToApp as LogoutIcon,
+  Person as LoginIcon,
 } from "@material-ui/icons";
+import { useAuth } from "../contexts/AuthContext";
 
 interface NavbarProps {
   view: string;
@@ -81,6 +84,7 @@ const Navbar: React.FC<NavbarProps> = ({ view, setView }) => {
   const classes = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { user, role, signOut } = useAuth();
 
   return (
     <AppBar position="sticky" className={classes.navbar} elevation={0}>
@@ -120,27 +124,65 @@ const Navbar: React.FC<NavbarProps> = ({ view, setView }) => {
             >
               {!isMobile && "Vagas"}
             </Button>
-            <Button
-              className={`${classes.navButton} ${view === "gerenciar" ? classes.activeButton : ""}`}
-              onClick={() => setView("gerenciar")}
-              startIcon={<GearIcon />}
-            >
-              {!isMobile && "Gerenciar"}
-            </Button>
-            <Button
-              className={`${classes.navButton} ${view === "inscricoes" ? classes.activeButton : ""}`}
-              onClick={() => setView("inscricoes")}
-              startIcon={<PeopleIcon />}
-            >
-              {!isMobile && "Inscrições"}
-            </Button>
-            <Button
-              className={`${classes.navButton} ${view === "dashboard" ? classes.activeButton : ""}`}
-              onClick={() => setView("dashboard")}
-              startIcon={<DashboardIcon />}
-            >
-              {!isMobile && "Estatísticas"}
-            </Button>
+            {role === "admin" && (
+              <Button
+                className={`${classes.navButton} ${view === "gerenciar" ? classes.activeButton : ""}`}
+                onClick={() => setView("gerenciar")}
+                startIcon={<GearIcon />}
+              >
+                {!isMobile && "Gerenciar"}
+              </Button>
+            )}
+            {user && role !== "admin" && (
+              <Button
+                className={`${classes.navButton} ${view === "minhas-inscricoes" ? classes.activeButton : ""}`}
+                onClick={() => setView("minhas-inscricoes")}
+                startIcon={<VagasIcon />}
+              >
+                {!isMobile && "Minhas Vagas"}
+              </Button>
+            )}
+            {role === "admin" && (
+              <Button
+                className={`${classes.navButton} ${view === "inscricoes" ? classes.activeButton : ""}`}
+                onClick={() => setView("inscricoes")}
+                startIcon={<PeopleIcon />}
+              >
+                {!isMobile && "Inscrições"}
+              </Button>
+            )}
+            {role === "admin" && (
+              <Button
+                className={`${classes.navButton} ${view === "dashboard" ? classes.activeButton : ""}`}
+                onClick={() => setView("dashboard")}
+                startIcon={<DashboardIcon />}
+              >
+                {!isMobile && "Estatísticas"}
+              </Button>
+            )}
+
+            {user ? (
+              <Button
+                className={classes.navButton}
+                onClick={async () => {
+                  await signOut();
+                  setView("login");
+                }}
+                startIcon={<LogoutIcon />}
+                style={{ marginLeft: "auto", color: "#d32f2f" }}
+              >
+                {!isMobile && "Sair"}
+              </Button>
+            ) : (
+              <Button
+                className={`${classes.navButton} ${view === "login" ? classes.activeButton : ""}`}
+                onClick={() => setView("login")}
+                startIcon={<LoginIcon />}
+                style={{ marginLeft: "auto" }}
+              >
+                {!isMobile && "Login"}
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

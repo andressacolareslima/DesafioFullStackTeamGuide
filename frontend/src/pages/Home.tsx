@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   TextField,
-  InputAdornment,
+  InputBase,
   Box,
   Container,
   IconButton,
@@ -12,8 +12,9 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Button,
 } from "@material-ui/core";
-import { Search as SearchIcon, Close as CloseIcon } from "@material-ui/icons";
+import { Search as SearchIcon, Close as CloseIcon, Work as WorkIcon } from "@material-ui/icons";
 import { Pagination } from "@material-ui/lab";
 import { useQuery } from "react-query";
 import VagaCard from "../components/VagaCard";
@@ -21,37 +22,113 @@ import Loading from "../components/Loading";
 import api from "../services/api";
 import { Vaga } from "../types";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  heroBackground: {
+    background: "linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%)",
+    padding: theme.spacing(12, 2, 10, 2),
+    borderRadius: "0 0 60px 60px",
+    marginBottom: theme.spacing(6),
+    textAlign: "center",
+    position: "relative",
+    overflow: "hidden",
+    boxShadow: "0 10px 40px rgba(0, 172, 193, 0.1)",
+  },
+  heroTitle: {
+    fontWeight: 900,
+    color: "#004D40",
+    marginBottom: theme.spacing(3),
+    fontSize: "clamp(2.5rem, 5vw, 4rem)",
+    letterSpacing: "-1.5px",
+  },
+  heroSubtitle: {
+    color: "#00796B",
+    fontSize: "1.2rem",
+    marginBottom: theme.spacing(5),
+    maxWidth: 700,
+    margin: "0 auto",
+    lineHeight: 1.6,
+  },
+  searchWrapper: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    padding: theme.spacing(1, 2, 1, 3),
+    display: "flex",
+    alignItems: "center",
+    boxShadow: "0 15px 35px rgba(0, 172, 193, 0.2)",
+    maxWidth: 800,
+    margin: "0 auto",
+    border: "2px solid #E0F7FA",
+    transition: "all 0.3s ease",
+    "&:focus-within": {
+      borderColor: "#00ACC1",
+      boxShadow: "0 15px 40px rgba(0, 172, 193, 0.3)",
+      transform: "translateY(-2px)"
+    }
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: theme.spacing(1),
+    fontSize: "1.1rem",
+    color: "#333",
+  },
+  searchButton: {
+    backgroundColor: "#00ACC1",
+    color: "#FFF",
+    borderRadius: 30,
+    padding: "10px 24px",
+    fontWeight: 700,
+    textTransform: "none",
+    "&:hover": {
+      backgroundColor: "#0097A7",
+    },
+  },
+  filterControl: {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 15,
+      backgroundColor: "#FFFFFF",
+      boxShadow: "0 4px 15px rgba(0,0,0,0.03)",
+      "& fieldset": { borderColor: "#E0E0E0" },
+      "&:hover fieldset": { borderColor: "#00ACC1" },
+      "&.Mui-focused fieldset": { borderColor: "#00ACC1" },
+    },
+  },
   pagination: {
     "& .MuiPaginationItem-root": {
-      borderRadius: "8px",
+      borderRadius: "12px",
       border: "1px solid #B2EBF2",
       color: "#00ACC1",
       fontWeight: "bold",
     },
     "& .MuiPaginationItem-page.Mui-selected": {
-      backgroundColor: "#E0F2F1",
-      color: "#00ACC1",
+      backgroundColor: "#00ACC1",
+      color: "#FFF",
       border: "1px solid #00ACC1",
-    },
-  },
-  searchField: {
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 30,
-      backgroundColor: "#F5F5F5",
-      transition: "0.3s",
-      "&.Mui-focused": {
-        backgroundColor: "#FFF",
-        boxShadow: "0px 4px 15px rgba(0, 172, 193, 0.1)",
-      },
+      "&:hover": {
+        backgroundColor: "#0097A7",
+      }
     },
   },
   cardAnimado: {
-    transition: "transform 0.3s ease-in-out",
+    transition: "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
     "&:hover": {
-      transform: "translateY(-8px)",
+      transform: "translateY(-10px) scale(1.02)",
     },
   },
+  statBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    backgroundColor: "#E0F2F1",
+    color: "#00695C",
+    padding: "6px 16px",
+    borderRadius: 20,
+    fontWeight: 800,
+    fontSize: "0.9rem",
+    marginBottom: theme.spacing(3),
+    "& svg": {
+      marginRight: 6,
+      fontSize: 18,
+    }
+  }
 }));
 
 interface HomeProps {
@@ -63,7 +140,7 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
   const [busca, setBusca] = useState("");
   const [buscaDebounced, setBuscaDebounced] = useState("");
   const [areaFilter, setAreaFilter] = useState("Todas");
-  const [sortOrder, setSortOrder] = useState("A-Z");
+  const [sortOrder, setSortOrder] = useState("Recentes");
   const [page, setPage] = useState(1);
   const [isPaginating, setIsPaginating] = useState(false);
   const itemsPerPage = 5;
@@ -102,7 +179,6 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
     "vagasHome",
     async () => {
       const res = await api.get("/vagas?size=100");
-
       return res.data.content || res.data || [];
     },
     {
@@ -156,150 +232,144 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
     setTimeout(() => {
       setPage(value);
       setIsPaginating(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const jobsSection = document.getElementById("jobs-list");
+      if (jobsSection) {
+        jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 300, behavior: "smooth" });
+      }
     }, 300);
   };
 
   if (isLoading) return <Loading />;
 
   return (
-    <Fade in={!isLoading} timeout={1000}>
-      <Container maxWidth="md" style={{ marginTop: 50, marginBottom: 80 }}>
-        <Grid container spacing={3} style={{ marginBottom: 60 }}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              className={classes.searchField}
-              fullWidth
-              variant="outlined"
-              placeholder="Pesquisar cargo, tecnologia ou área..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon style={{ color: "#00ACC1" }} />
-                  </InputAdornment>
-                ),
-                endAdornment: busca && (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setBusca("")} size="small">
-                      <CloseIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={6} md={3}>
-            <FormControl
-              variant="outlined"
-              fullWidth
-              className={classes.searchField}
-            >
-              <Select
-                value={areaFilter}
-                onChange={handleAreaChange}
-                displayEmpty
-                style={{
-                  borderRadius: 30,
-                  backgroundColor: "#F5F5F5",
-                  fontWeight: 600,
-                  color: "#555",
-                }}
-              >
-                <MenuItem value="Todas">Todas as Áreas</MenuItem>
-                {areasUnicas.map((area) => (
-                  <MenuItem key={area} value={area}>
-                    {area}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6} md={3}>
-            <FormControl
-              variant="outlined"
-              fullWidth
-              className={classes.searchField}
-            >
-              <Select
-                value={sortOrder}
-                onChange={handleSortChange}
-                displayEmpty
-                style={{
-                  borderRadius: 30,
-                  backgroundColor: "#F5F5F5",
-                  fontWeight: 600,
-                  color: "#555",
-                }}
-              >
-                <MenuItem value="Recentes">Mais Recentes</MenuItem>
-                <MenuItem value="A-Z">Ordem Alfabética</MenuItem>
-                <MenuItem value="Z-A">Ordem (Z-A)</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
+    <Fade in={!isLoading} timeout={800}>
+      <Box>
+        {/* HERO SECTION */}
+        <Box className={classes.heroBackground}>
+          <Container maxWidth="md">
+            <Box className={classes.statBadge}>
+               <WorkIcon /> {vagasAtivas.length} Vagas Abertas
+            </Box>
+            <Typography variant="h1" className={classes.heroTitle}>
+              Encontre o trabalho da sua vida
+            </Typography>
+            <Typography variant="subtitle1" className={classes.heroSubtitle}>
+              Conectamos talentos incríveis com as empresas mais inovadoras do mercado.
+              Pesquise por cargo, tecnologia ou área e dê o próximo passo na sua jornada.
+            </Typography>
 
-        <Box mb={5}>
-          <Typography
-            variant="h3"
-            style={{ fontWeight: 900, color: "#004D40" }}
-          >
-            Oportunidades
-          </Typography>
-          <Typography variant="subtitle1" style={{ color: "#666" }}>
-            Explore {vagasFiltradas.length} vagas disponíveis para você.
-          </Typography>
+            <Box className={classes.searchWrapper}>
+              <SearchIcon style={{ color: "#00ACC1", fontSize: 28 }} />
+              <InputBase
+                className={classes.searchInput}
+                placeholder="Ex: Desenvolvedor React, Engenheiro de Dados..."
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+              />
+              {busca && (
+                <IconButton onClick={() => setBusca("")} size="small" style={{ marginRight: 8 }}>
+                  <CloseIcon />
+                </IconButton>
+              )}
+              <Button className={classes.searchButton} disableElevation variant="contained">
+                Buscar
+              </Button>
+            </Box>
+          </Container>
         </Box>
 
-        <Fade in={!isPaginating} timeout={300}>
-          <Box minHeight={400}>
-            {isError ? (
-              <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#fff", borderRadius: 35, border: "1px dashed #cfd8dc" }}>
-                <Box fontSize={50} mb={2}>⚠️</Box>
-                <Typography variant="h5" style={{ fontWeight: 800, color: "#d32f2f" }}>
-                  Falha ao carregar oportunidades
-                </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ marginTop: 10 }}>
-                  Verifique sua conexão ou tente novamente mais tarde.
-                </Typography>
-              </Box>
-            ) : vagasFiltradas.length === 0 ? (
-              <Box width="100%" textAlign="center" py={10} style={{ backgroundColor: "#F9FBFB", borderRadius: 35, border: "2px dashed #B2EBF2" }}>
-                <Box fontSize={60} mb={2}>🔍</Box>
-                <Typography variant="h5" style={{ fontWeight: 800, color: "#00838F" }}>
-                  Nenhuma vaga encontrada
-                </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ marginTop: 10, maxWidth: 400, margin: "0 auto" }}>
-                  Tente ajustar seus filtros de pesquisa ou retorne mais tarde para visualizar novas oportunidades.
-                </Typography>
-              </Box>
-            ) : (
-            <Grid container spacing={3}>
-              {vagasExibidas.map((v) => (
-                <Grid item xs={12} key={v.id} className={classes.cardAnimado}>
-                  <VagaCard vaga={v} setAlerta={setAlerta} />
-                </Grid>
-              ))}
-            </Grid>
-            )}
+        {/* LISTING SECTION */}
+        <Container maxWidth="md" style={{ marginBottom: 80 }} id="jobs-list">
+          <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" mb={4}>
+             <Typography
+              variant="h4"
+              style={{ fontWeight: 800, color: "#004D40", flex: "1 1 auto", minWidth: 200, marginBottom: 16 }}
+            >
+              Resultados da busca ({vagasFiltradas.length})
+            </Typography>
+            
+            <Box display="flex" flexWrap="wrap" style={{ gap: "16px" }}>
+              <FormControl variant="outlined" className={classes.filterControl} style={{ minWidth: 200 }}>
+                <Select
+                  value={areaFilter}
+                  onChange={handleAreaChange}
+                  displayEmpty
+                >
+                  <MenuItem value="Todas">Todas as Áreas</MenuItem>
+                  {areasUnicas.map((area) => (
+                    <MenuItem key={area} value={area}>
+                      {area}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl variant="outlined" className={classes.filterControl} style={{ minWidth: 200 }}>
+                <Select
+                  value={sortOrder}
+                  onChange={handleSortChange}
+                  displayEmpty
+                >
+                  <MenuItem value="Recentes">Mais Recentes</MenuItem>
+                  <MenuItem value="A-Z">Ordem Alfabética</MenuItem>
+                  <MenuItem value="Z-A">Ordem (Z-A)</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
-        </Fade>
 
-        {vagasFiltradas.length > 0 && !isError && (
-          <Box mt={10} display="flex" justifyContent="center">
-            <Pagination
-              className={classes.pagination}
-              count={totalPages}
-              page={page}
-              onChange={handlePageChange}
-              variant="outlined"
-              shape="rounded"
-            />
-          </Box>
-        )}
-      </Container>
+          <Fade in={!isPaginating} timeout={400}>
+            <Box minHeight={400}>
+              {isError ? (
+                <Box width="100%" textAlign="center" py={12} style={{ backgroundColor: "#FAFAFA", borderRadius: 30, border: "2px dashed #E0E0E0" }}>
+                  <Box fontSize={60} mb={2}>🔌</Box>
+                  <Typography variant="h5" style={{ fontWeight: 800, color: "#d32f2f" }}>
+                    Ops, algo deu errado
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary" style={{ marginTop: 10 }}>
+                    Não conseguimos conectar aos nossos servidores. Tente novamente em instantes.
+                  </Typography>
+                </Box>
+              ) : vagasFiltradas.length === 0 ? (
+                <Box width="100%" textAlign="center" py={12} style={{ backgroundColor: "#F9FBFB", borderRadius: 30, border: "2px dashed #B2EBF2" }}>
+                  <Box fontSize={70} mb={2}>🚀</Box>
+                  <Typography variant="h5" style={{ fontWeight: 800, color: "#00838F" }}>
+                    Nenhuma vaga encontrada
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary" style={{ marginTop: 15, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
+                    Não encontramos nenhuma oportunidade com os filtros atuais. <br/>
+                    Tente usar termos mais genéricos ou limpar a busca.
+                  </Typography>
+                </Box>
+              ) : (
+                <Grid container spacing={4}>
+                  {vagasExibidas.map((v) => (
+                    <Grid item xs={12} key={v.id} className={classes.cardAnimado}>
+                      <VagaCard vaga={v} setAlerta={setAlerta} />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </Box>
+          </Fade>
+
+          {vagasFiltradas.length > 0 && !isError && (
+            <Box mt={8} display="flex" justifyContent="center">
+              <Pagination
+                className={classes.pagination}
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                variant="outlined"
+                shape="rounded"
+                size="large"
+              />
+            </Box>
+          )}
+        </Container>
+      </Box>
     </Fade>
   );
 };

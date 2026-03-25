@@ -30,7 +30,7 @@ public class CandidaturasController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CandidaturaDTO>> listarTodas() {
+    public ResponseEntity<List<CandidaturaDTO>> listarTodas(@RequestParam(value = "email", required = false) String email) {
         List<CandidaturasModel> lista = candidaturasRepository.findAllWithVaga();
         
         List<CandidaturaDTO> dtos = lista.stream().map(c -> new CandidaturaDTO(
@@ -40,6 +40,12 @@ public class CandidaturasController {
             c.getStatus(),
             c.getTituloVaga()
         )).collect(Collectors.toList());
+
+        if (email != null && !email.trim().isEmpty()) {
+            dtos = dtos.stream()
+                       .filter(dto -> email.equalsIgnoreCase(dto.getEmailCandidato()))
+                       .collect(Collectors.toList());
+        }
 
         return ResponseEntity.ok(dtos);
     }

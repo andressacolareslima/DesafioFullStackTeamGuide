@@ -16,6 +16,7 @@ import {
 import { TransitionProps } from "@material-ui/core/transitions";
 import { useMutation } from "react-query";
 import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const StyledTextField = withStyles({
   root: {
@@ -131,6 +132,7 @@ interface VagaCardProps {
 
 const VagaCard: React.FC<VagaCardProps> = ({ vaga, setAlerta }) => {
   const classes = useStyles();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ nomeCandidato: "", emailCandidato: "" });
 
@@ -160,7 +162,8 @@ const VagaCard: React.FC<VagaCardProps> = ({ vaga, setAlerta }) => {
   );
 
   const handleConfirmar = () => {
-    if (!form.nomeCandidato.trim() || !form.emailCandidato.trim()) {
+    const emailToUse = user?.email || form.emailCandidato;
+    if (!form.nomeCandidato.trim() || !emailToUse.trim()) {
       setAlerta({
         open: true,
         msg: "Preencha todos os campos.",
@@ -168,7 +171,7 @@ const VagaCard: React.FC<VagaCardProps> = ({ vaga, setAlerta }) => {
       });
       return;
     }
-    mutation.mutate(form);
+    mutation.mutate({ nomeCandidato: form.nomeCandidato, emailCandidato: emailToUse });
   };
 
   return (
@@ -249,16 +252,22 @@ const VagaCard: React.FC<VagaCardProps> = ({ vaga, setAlerta }) => {
               }
             />
 
-            <StyledTextField
-              label="E-mail Acadêmico ou Pessoal"
-              variant="outlined"
-              type="email"
-              fullWidth
-              value={form.emailCandidato}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setForm({ ...form, emailCandidato: e.target.value })
-              }
-            />
+            {user ? (
+              <Typography variant="body2" style={{ color: "#00ACC1", fontWeight: 700, padding: "8px 0" }}>
+                E-mail vinculado automaticamente: {user.email}
+              </Typography>
+            ) : (
+              <StyledTextField
+                label="E-mail Acadêmico ou Pessoal"
+                variant="outlined"
+                type="email"
+                fullWidth
+                value={form.emailCandidato}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setForm({ ...form, emailCandidato: e.target.value })
+                }
+              />
+            )}
           </Box>
         </DialogContent>
 

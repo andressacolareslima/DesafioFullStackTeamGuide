@@ -18,7 +18,11 @@ import GerenciarVagas from "./pages/GerenciarVagas";
 import Inscricoes from "./pages/Inscricoes";
 import Dashboard from "./pages/Dashboard";
 import Privacidade from "./pages/Privacidade";
+import MinhasInscricoes from "./pages/MinhasInscricoes";
 import Footer from "./components/Footer";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -78,12 +82,14 @@ interface AlertaState {
 
 function App() {
   const classes = useStyles();
+  const { session, role, loading: authLoading } = useAuth();
 
   const getInitialView = () => {
     const path = window.location.pathname;
     if (path.includes("gerenciar")) return "gerenciar";
     if (path.includes("inscricoes")) return "inscricoes";
     if (path.includes("dashboard")) return "dashboard";
+    if (path.includes("minhas-inscricoes")) return "minhas-inscricoes";
     if (path.includes("privacidade")) return "privacidade";
     return "vagas";
   };
@@ -123,6 +129,9 @@ function App() {
       case "dashboard":
         document.title = "Estatísticas | TalentFlow";
         break;
+      case "minhas-inscricoes":
+        document.title = "Minhas Inscrições | TalentFlow";
+        break;
       case "privacidade":
         document.title = "Privacidade | TalentFlow";
         break;
@@ -140,8 +149,10 @@ function App() {
           ? "inscricoes"
           : path.includes("dashboard")
             ? "dashboard"
-            : path.includes("privacidade")
-              ? "privacidade"
+            : path.includes("minhas-inscricoes")
+              ? "minhas-inscricoes"
+              : path.includes("privacidade")
+                ? "privacidade"
               : "vagas";
       if (view !== newView) {
         setIsTransitioning(true);
@@ -173,14 +184,20 @@ function App() {
               <Fade in={!isTransitioning} timeout={600}>
                 <Box>
                   {view === "vagas" && <Home setAlerta={setAlerta} />}
+                  {view === "login" && <Login setView={handleViewChange} setAlerta={setAlerta} />}
+                  {view === "register" && <Register setView={handleViewChange} setAlerta={setAlerta} />}
+                  
                   {view === "gerenciar" && (
-                    <GerenciarVagas setAlerta={setAlerta} />
+                    role === "admin" ? <GerenciarVagas setAlerta={setAlerta} /> : <Home setAlerta={setAlerta} />
                   )}
                   {view === "inscricoes" && (
-                    <Inscricoes setAlerta={setAlerta} />
+                    role === "admin" ? <Inscricoes setAlerta={setAlerta} /> : <Home setAlerta={setAlerta} />
                   )}
-                  {view === "dashboard" && <Dashboard />}
+                  {view === "dashboard" && (
+                     role === "admin" ? <Dashboard /> : <Home setAlerta={setAlerta} />
+                  )}
                   {view === "privacidade" && <Privacidade />}
+                  {view === "minhas-inscricoes" && session && <MinhasInscricoes />}
                 </Box>
               </Fade>
             )}
