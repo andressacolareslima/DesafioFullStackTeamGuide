@@ -188,14 +188,14 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
   );
 
   const { vagasAtivas, areasUnicas, vagasFiltradas } = useMemo(() => {
-    const ativas = Array.isArray(vagas)
-      ? vagas.filter((v) => v.status?.toLowerCase() === "aberta")
-      : [];
-    const areas = Array.from(new Set(ativas.map((v) => v.area))).sort((a, b) =>
+    const todas = Array.isArray(vagas) ? vagas : [];
+    const ativas = todas.filter((v) => v.status?.toLowerCase() === "aberta");
+    
+    const areas = Array.from(new Set(todas.map((v) => v.area))).sort((a, b) =>
       a.localeCompare(b),
     );
 
-    let filtradas = ativas.filter(
+    let filtradas = todas.filter(
       (v) =>
         v.titulo.toLowerCase().includes(buscaDebounced.toLowerCase()) ||
         v.area.toLowerCase().includes(buscaDebounced.toLowerCase()),
