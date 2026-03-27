@@ -246,11 +246,10 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
   return (
     <Fade in={!isLoading} timeout={800}>
       <Box>
-        {/* HERO SECTION */}
         <Box className={classes.heroBackground}>
           <Container maxWidth="md">
             <Box className={classes.statBadge}>
-               <WorkIcon /> {vagasAtivas.length} Vagas Abertas
+              <WorkIcon /> {vagasAtivas.length} Vagas Abertas
             </Box>
             <Typography variant="h1" className={classes.heroTitle}>
               Encontre o trabalho da sua vida
@@ -280,16 +279,16 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
           </Container>
         </Box>
 
-        {/* LISTING SECTION */}
+
         <Container maxWidth="md" style={{ marginBottom: 80 }} id="jobs-list">
           <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" mb={4}>
-             <Typography
+            <Typography
               variant="h4"
               style={{ fontWeight: 800, color: "#004D40", flex: "1 1 auto", minWidth: 200, marginBottom: 16 }}
             >
               Resultados da busca ({vagasFiltradas.length})
             </Typography>
-            
+
             <Box display="flex" flexWrap="wrap" style={{ gap: "16px" }}>
               <FormControl variant="outlined" className={classes.filterControl} style={{ minWidth: 200 }}>
                 <Select
@@ -305,7 +304,7 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
                   ))}
                 </Select>
               </FormControl>
-              
+
               <FormControl variant="outlined" className={classes.filterControl} style={{ minWidth: 200 }}>
                 <Select
                   value={sortOrder}
@@ -339,7 +338,7 @@ const Home: React.FC<HomeProps> = ({ setAlerta }) => {
                     Nenhuma vaga encontrada
                   </Typography>
                   <Typography variant="body1" color="textSecondary" style={{ marginTop: 15, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
-                    Não encontramos nenhuma oportunidade com os filtros atuais. <br/>
+                    Não encontramos nenhuma oportunidade com os filtros atuais. <br />
                     Tente usar termos mais genéricos ou limpar a busca.
                   </Typography>
                 </Box>

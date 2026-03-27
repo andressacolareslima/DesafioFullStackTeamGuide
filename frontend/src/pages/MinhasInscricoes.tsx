@@ -244,7 +244,7 @@ const MinhasInscricoes: React.FC = () => {
         </Container>
       </Fade>
 
-      {/* Dialog for Editing Candidatura */}
+
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth PaperProps={{ style: { borderRadius: 20 } }}>
         <DialogTitle style={{ fontWeight: 800, color: "#004D40" }}>Editar Candidatura</DialogTitle>
         <DialogContent>
@@ -275,7 +275,7 @@ const MinhasInscricoes: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog for Canceling/Deleting Candidatura */}
+
       <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="sm" fullWidth PaperProps={{ style: { borderRadius: 20 } }}>
         <DialogTitle style={{ fontWeight: 800, color: "#D32F2F" }}>Excluir Candidatura</DialogTitle>
         <DialogContent>

@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   role: null,
   loading: true,
-  signOut: async () => {},
+  signOut: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -27,7 +27,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -35,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!session) setLoading(false);
     });
 
-    // Listen to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, currentSession) => {
         setSession(currentSession);
@@ -56,10 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      // 1. By default, you might store roles in user_metadata or app_metadata
-      // if storing in user_metadata: currentUser.user_metadata?.role
-      
-      // 2. Alternatively, if using a "profiles" table:
+
       const { data, error } = await supabase
         .from("profiles")
         .select("role")
@@ -69,9 +64,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error && error.code !== "PGRST116") {
         console.error("Error fetching user role:", error);
       }
-      
-      // We assume user_metadata takes precedence if not found in profiles for simplicity
-      // Or default to 'user' if profiles table isn't built yet
+
+
       const finalRole = data?.role || currentUser.user_metadata?.role || "user";
       setRole(finalRole);
     } catch (err) {

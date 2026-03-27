@@ -173,7 +173,7 @@ const Register: React.FC<RegisterProps> = ({ setView, setAlerta }) => {
   return (
     <Box className={classes.root}>
       <Grid container style={{ minHeight: "100vh" }}>
-        {/* Left Side (Slogan & Image) */}
+
         <Grid item xs={12} md={6} className={classes.leftPanel}>
           <Typography variant="h3" className={classes.slogan}>
             Comece sua<br/>
@@ -187,7 +187,7 @@ const Register: React.FC<RegisterProps> = ({ setView, setAlerta }) => {
           />
         </Grid>
 
-        {/* Right Side (Form) */}
+
         <Grid item xs={12} md={6} className={classes.rightPanel}>
           <Link 
             className={classes.backLink}

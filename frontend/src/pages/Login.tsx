@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#FFFFFF",
   },
   leftPanel: {
-    backgroundColor: "#84C8C2", // Soft green-teal from the reference
+    backgroundColor: "#84C8C2",
     position: "relative",
     display: "flex",
     flexDirection: "column",
@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputRoot: {
     "& .MuiOutlinedInput-root": {
-      backgroundColor: "#F4F6F6", // very soft gray for input
+      backgroundColor: "#F4F6F6",
       borderRadius: "16px",
       "& fieldset": {
         border: "none",
@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   submitBtn: {
-    backgroundColor: "#A7D3CF", // Soft mint green for button
+    backgroundColor: "#A7D3CF",
     color: "#FFFFFF",
     padding: "16px",
     borderRadius: "16px",
@@ -179,7 +179,7 @@ const Login: React.FC<LoginProps> = ({ setView, setAlerta }) => {
   return (
     <Box className={classes.root}>
       <Grid container style={{ minHeight: "100vh" }}>
-        {/* Left Side (Slogan & Image) */}
+
         <Grid item xs={12} md={6} className={classes.leftPanel}>
           <Typography variant="h3" className={classes.slogan}>
             Conecte-se,<br/>
@@ -193,7 +193,7 @@ const Login: React.FC<LoginProps> = ({ setView, setAlerta }) => {
           />
         </Grid>
 
-        {/* Right Side (Form) */}
+
         <Grid item xs={12} md={6} className={classes.rightPanel}>
           <Link 
             className={classes.backLink}
